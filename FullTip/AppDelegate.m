@@ -7,16 +7,24 @@
 //
 
 #import "AppDelegate.h"
+#import <GooglePlus/GooglePlus.h>
+#import <FacebookSDK/FacebookSDK.h>
 
 @interface AppDelegate ()
 
 @end
 
 @implementation AppDelegate
+static NSString * const kClientId = @"704643430421-sfpv6t7nibgk4gmt4u1g35fj2455iaqd.apps.googleusercontent.com";
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    [GPPSignIn sharedInstance].clientID = kClientId;
+    UIPageControl *pageControl = [UIPageControl appearance];
+    pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
+    pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+    pageControl.backgroundColor = [UIColor whiteColor];
     return YES;
 }
 
@@ -36,10 +44,33 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    [FBAppEvents activateApp];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+- (BOOL)application: (UIApplication *)application openURL: (NSURL *)url sourceApplication: (NSString *)sourceApplication annotation: (id)annotation
+{
+    NSLog(@"aa%@",url);//
+    NSLog(@"tt%@",[url scheme]);
+    if([[url scheme] isEqualToString:@"com.ezeq.fulltip"])
+    {
+        
+        return [GPPURLHandler handleURL:url sourceApplication:sourceApplication annotation:annotation];
+        
+    }else if([[url scheme] isEqualToString:@"fb455502871291293"]){
+        return [FBAppCall handleOpenURL:url
+                      sourceApplication:sourceApplication
+                        fallbackHandler:^(FBAppCall *call) {
+                            NSLog(@"In fallback handler");
+                        }];
+
+    }else{
+        return NO;
+    }
+    
+}
+
 
 @end
